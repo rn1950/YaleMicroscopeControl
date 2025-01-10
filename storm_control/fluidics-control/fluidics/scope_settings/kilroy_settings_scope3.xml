@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<settings><!-- simulate kilroy settings -->
+  <!-- Valve parameters -->
+  <valve_type type="string">None</valve_type>	<!-- (PYTHON notation x-1) COM port of serial connection to valves -->  
+  <cnc type="string">CNC</cnc><!-- Look for a CNC -->
+
+
+  <!-- Pump parameters -->
+  <!-- <pump_class type="string">pumps.rainin_rp1</pump_class> -->
+  <pump_class type="string">pumps.gilson_mp3</pump_class>
+  <pump_com_port type="string">COM7</pump_com_port> <!--  (PYTHON notation x-1) COM port of serial connection to pump -->
+  <pump_ID type="int">30</pump_ID> <!-- ID of Pump -->
+  <simulate_pump type="boolean">False</simulate_pump><!-- Simulate pump? (Defaults to False) -->
+  <flip_flow_direction type="boolean">False</flip_flow_direction><!-- Flip the direction defined as forward? -->
+  
+  <!-- General Kilroy parameters -->
+  <verbose type="boolean">False</verbose>
+  <serial_verbose type="boolean">False</serial_verbose>  <!-- display serial commands? -->
+  <tcp_port type="int">9500</tcp_port> <!-- TCP/IP port for local communication with Dave -->
+  <protocols_file type = "">default_config.xml</protocols_file><!-- Location of default protocol -->
+  <commands_file type = "">default_config.xml</commands_file><!-- Location of default commands -->
+
+</settings>

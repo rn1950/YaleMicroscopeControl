@@ -1,0 +1,22 @@
+
+2017-05-08: Pulled storm-control into fluidics control and removed the microscope control parts. Kept sc-library as named so that things still work without having to do a lot of find/replace.  This might create confusion with storm-control though.
+
+2020-12-07: Operational version of da  vinci miniMaker
+* basic communication is working
+* to install, the only key needed is to make the USB device "ttyACM0" executable by non-root
+    1. To check permissions
+    `ls -lth /dev/ttyACM0`
+    Should read: crw-rw---- 1 root alistair 166
+    2. To edit permissions (if our user account isn't listed, which it won't be on a new machine):
+    create the file xyzprinterrules in the following location and edit it to read the following text:
+    `/etc/udev/rules.d/xyzprinterrules`
+    KERNEL=="ttyACM[0-9]*", SUBSYSTEMS=="usb", ATTRS{idVendor}=="11f1", ATTRS{idProduct}=="2513", MODE="0660", GROUP="alistair"
+      note: GROUP is the username that trys to run it.  
+    After creating this file, run `sudo /etc/init.d/udev restart` to update.
+    Now Kilroy should be able to talk to the CNC
+* some fixes still needed:
+    - system physically re-initializes everytime it is booted, homing the stage to 0,0,0, which has the z-axis all the way down.
+    - system doesn't re-initialize or home upon start up.
+    - system also doesn't remember where it left off on startup, so if the software is booted up and restarted, it leads to inconsistent physical behavior
+
+

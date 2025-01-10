@@ -1,0 +1,1 @@
+[{"positions": [[0, 0, [20, 20, -100]], [0, 7, [20, 20, -50]], [11, 7, [0, 0, 0]], [11, 0, [0, 0, 0.0]]], "name": "MultiWell", "height": 0.0}, {"positions": [[0, 0, [0, 0, 0.0]]], "name": "WashBuffer", "height": 0.0}, {"positions": [[0, 0, [0, 0, 0]]], "name": "BleachBuffer", "height": 0}]
