@@ -1053,6 +1053,7 @@ class ZScanLockMode(AlwaysOnLockMode): # previously inhereted from JumpLockMode
         zrange = 0.001 * zrange
         self.zrange = zrange
         step_size = 0.001 * step_size
+        self.step_size = step_size
 
         # Turn off lock
         if  self.amLocked() and self.szs_first_move:
@@ -1109,7 +1110,7 @@ class ZScanLockMode(AlwaysOnLockMode): # previously inhereted from JumpLockMode
                     # print('00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001')
                     # print(self.num_steps)
                     print('macro steps' + str((self.num_steps * 2) - 1))
-                    LockMode.z_stage_functionality.runZStackMacro((self.num_steps * 2) - 1) # 2* num steps becuase we go above and below center focus 
+                    LockMode.z_stage_functionality.runZStackMacro(self.step_size, (self.num_steps * 2) - 1) # 2* num steps becuase we go above and below center focus 
                 elif not self.start_of_scan:
                     print('macro END at frame num ' + str(self.szs_counter) )
                     self.start_of_scan = True

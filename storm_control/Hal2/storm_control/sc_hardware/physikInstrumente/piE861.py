@@ -107,8 +107,16 @@ class piE861(object):
     # @param x Stage x position in um.
     # @param y Stage y position in um.
     #
-    def runZStackMacro(self, num_runs):
-        macro_string = 'MAC NSTART ZSTEP ' + str(num_runs)
+    def runZStackMacro(self, step_size, num_runs):
+
+        if step_size == 0.0250:
+            macro_string = 'MAC NSTART ZSTEP250 ' + str(num_runs)
+            # print('macro 250==========================================================================================')
+        elif step_size == 0.050:
+            macro_string = 'MAC NSTART ZSTEP50 ' + str(num_runs)
+            # print('macro 50 ==========================================================================================')
+        else:
+            raise Exception('You entered an unsupported step size!')
         self.pidevice.send(macro_string)
 
     def startEndZMacro(self):

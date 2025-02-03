@@ -26,7 +26,7 @@ import signal
 import time
 
 import sys # beacause python is extremely stupid and can't read my .pth file 
-sys.path.append(r'C:\storm_control\Hal2')
+sys.path.append(r'C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\Hal2')
 # print(sys.path)
 
 from PyQt5 import QtCore, QtGui, QtWidgets

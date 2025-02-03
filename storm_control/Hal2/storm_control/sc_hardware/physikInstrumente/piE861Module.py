@@ -77,10 +77,11 @@ class PiZStageFunctionality(stageZModule.ZStageFunctionalityBuffered):
         super().goAbsolute(z_pos)
         self.restart_timer.start()
     
-    def runZStackMacro(self, num_steps):
+    def runZStackMacro(self, step_size, num_steps):
         self.update_timer.stop()
         self.restart_timer.stop()
-        super().runZStackMacro(num_steps)
+
+        super().runZStackMacro(step_size, num_steps)
 
     def startEndZMacro(self):
         self.update_timer.stop()

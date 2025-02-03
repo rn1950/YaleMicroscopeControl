@@ -1,0 +1,6 @@
+WAC DIO? 1 = 1 
+DIO 2 1 
+WAC DIO? 1 = 0 
+MVR 1 -0.00025 
+WAC ONT? 1 = 1 
+DIO 2 0

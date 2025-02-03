@@ -79,8 +79,8 @@ class ZStageFunctionalityBuffered(hardwareModule.BufferedFunctionality, lockModu
         self.z_position = z_pos
         return z_pos
     
-    def runZStackMacro(self, num_steps):
-        self.z_stage.runZStackMacro(num_steps)
+    def runZStackMacro(self, step_size, num_steps):
+        self.z_stage.runZStackMacro(step_size, num_steps)
 
     def startEndZMacro(self):
         self.z_stage.startEndZMacro()

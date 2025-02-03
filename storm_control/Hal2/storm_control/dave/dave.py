@@ -24,7 +24,7 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 # Debugging
-sys.path.append(r'C:\storm_control\Hal2')
+sys.path.append(r'C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\Hal2')
 import storm_control.sc_library.hdebug as hdebug
 
 # General
