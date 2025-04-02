@@ -82,8 +82,8 @@ class ZStageFunctionalityBuffered(hardwareModule.BufferedFunctionality, lockModu
     def runZStackMacro(self, step_size, num_steps):
         self.z_stage.runZStackMacro(step_size, num_steps)
 
-    def startEndZMacro(self):
-        self.z_stage.startEndZMacro()
+    def startEndZMacro(self, jump_size):
+        self.z_stage.startEndZMacro(jump_size)
         
 
 class ZStage(hardwareModule.HardwareModule):

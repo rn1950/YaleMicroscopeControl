@@ -83,10 +83,10 @@ class PiZStageFunctionality(stageZModule.ZStageFunctionalityBuffered):
 
         super().runZStackMacro(step_size, num_steps)
 
-    def startEndZMacro(self):
+    def startEndZMacro(self, jump_size):
         self.update_timer.stop()
         self.restart_timer.stop()
-        super().startEndZMacro()
+        super().startEndZMacro(jump_size)
 
     def goRelative(self, z_delta):
         z_pos = self.z_position - z_delta  # note move directions are reversed here 

@@ -214,12 +214,14 @@ class LockedMixin(object):
         return self.lm_target
         
     def handleQPDUpdate(self, qpd_state):
+        # self.lm_offset_threshold = 0.02 # robby added hardcoded value on 2/25/25
         if hasattr(super(), "handleQPDUpdate"):
             super().handleQPDUpdate(qpd_state)
 
         if (self.behavior == self.lm_mode_name):
             if qpd_state["is_good"] and (qpd_state["sum"] > self.lm_min_sum):
                 diff = (qpd_state["offset"] - self.lm_target)
+                # print('diff is ' + str(diff) + ' threshold is ' + str(self.lm_offset_threshold))
                 if (abs(diff) < self.lm_offset_threshold):
                     self.lm_buffer[self.lm_counter] = 1
                 else:
@@ -233,6 +235,8 @@ class LockedMixin(object):
                 self.lm_buffer[self.lm_counter] = 0
 
             good_lock = bool(numpy.sum(self.lm_buffer) == self.lm_buffer_length)
+            # print('good lock')
+            # print(good_lock)
 
             if good_lock:
                 self.last_good_z = LockMode.z_stage_functionality.getCurrentPosition()
@@ -347,7 +351,7 @@ class ScanMixin(object):
                                     value = 0.05))
 
     def handleQPDUpdate(self, qpd_state):
-        self.sm_offset_threshold = 0.8
+        self.sm_offset_threshold = 0.2
         if hasattr(super(), "handleQPDUpdate"):
             super().handleQPDUpdate(qpd_state)
             
@@ -398,7 +402,7 @@ class ScanMixin(object):
                         time.sleep(1) # if this is the first step in the scan we need to make sure the stage made it to the start 
                         # otherwise calling a relative move in the middle of the move to the bottom of the range might make the scan start in an undesired spot
                         self.first_step_in_correction = False
-
+                    print('going down by ' + str(-self.sm_z_step))
                     LockMode.z_stage_functionality.goRelative(-self.sm_z_step) # robby added (-) here because it was incrimenting in the wrong direction
 
     def startLockBehavior(self, behavior_name, behavior_params):
@@ -1101,7 +1105,7 @@ class ZScanLockMode(AlwaysOnLockMode): # previously inhereted from JumpLockMode
             # print('frame num' + str(self.szs_counter) + ' delta z is ' + str(self.szs_zvals[self.szs_counter]))
             if self.szs_counter == 0:
                 print('counter is zero---------------------------------------')
-                LockMode.z_stage_functionality.startEndZMacro()
+                LockMode.z_stage_functionality.startEndZMacro(self.zrange)
             if self.szs_zvals[self.szs_counter] == -self.zrange:
                 if self.start_of_scan:
                     # LockMode.z_stage_functionality.goRelative(self.szs_zvals[self.szs_counter])
@@ -1109,12 +1113,12 @@ class ZScanLockMode(AlwaysOnLockMode): # previously inhereted from JumpLockMode
                     print('macro start at frame num ' + str(self.szs_counter) )
                     # print('00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001')
                     # print(self.num_steps)
-                    print('macro steps' + str((self.num_steps * 2) - 1))
-                    LockMode.z_stage_functionality.runZStackMacro(self.step_size, (self.num_steps * 2) - 1) # 2* num steps becuase we go above and below center focus 
+                    print('macro steps' + str((self.num_steps * 2)))
+                    LockMode.z_stage_functionality.runZStackMacro(self.step_size, (self.num_steps * 2)) # 2* num steps becuase we go above and below center focus 
                 elif not self.start_of_scan:
                     print('macro END at frame num ' + str(self.szs_counter) )
                     self.start_of_scan = True
-                    LockMode.z_stage_functionality.startEndZMacro()
+                    LockMode.z_stage_functionality.startEndZMacro(self.zrange)
                     # LockMode.z_stage_functionality.goRelative(self.szs_zvals[self.szs_counter]) # go back to starting pos
 
             self.szs_counter += 1

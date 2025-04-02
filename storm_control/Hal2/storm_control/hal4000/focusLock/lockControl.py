@@ -58,10 +58,14 @@ class LockControl(QtCore.QObject):
         """
 
         # Return if we have a good lock.
+
+        print('handle check focus lock--------------------------')
         if self.isGoodLock():
+            print('handle check focus lock-------------------------- true')
             self.handleDone(True)
 
         else:
+            print('handle check focus lock--------------------------false')
             self.current_state["num_checks"] -= 1
 
             # Start a scan if we still don't have a good lock.

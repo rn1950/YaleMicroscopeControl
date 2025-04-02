@@ -109,7 +109,7 @@ class piE861(object):
     #
     def runZStackMacro(self, step_size, num_runs):
 
-        if step_size == 0.0250:
+        if step_size == 0.250:
             macro_string = 'MAC NSTART ZSTEP250 ' + str(num_runs)
             # print('macro 250==========================================================================================')
         elif step_size == 0.050:
@@ -119,8 +119,14 @@ class piE861(object):
             raise Exception('You entered an unsupported step size!')
         self.pidevice.send(macro_string)
 
-    def startEndZMacro(self):
-        macro_string = 'MAC START STARTZ'
+    def startEndZMacro(self, jump_size):
+        if jump_size == 5.0:
+            macro_string = 'MAC START STARTZ5'
+        elif jump_size == 7.5:
+            macro_string = 'MAC START STARTZ75'
+        else:
+            raise Exception('You entered an unsupported z range!')
+        # print('macro startz ==========================================================================================')
         self.pidevice.send(macro_string)
 
     def goAbsolute(self, x):
