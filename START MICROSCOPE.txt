@@ -1,0 +1,43 @@
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+*******************************************************************************************************************************************
+-------------------------------------------------------------------------------------------------------------------------------------------
+Note to all users:
+
+FIRST START PI MIKRO MOVE, CONNECT TO PIEZO CONTROLLER, MOVE TO REFERENCE POSITION, AND CLOSE OUT OF PI SOFTWARE.
+
+* Do not change the objective or touch the objective with the piezo powered on but the software not set to closed loop mode.
+* To enable closed loop mode, just start Hal (recommended) or click "Closed Loop" in PI Mikro Move. 
+-------------------------------------------------------------------------------------------------------------------------------------------
+*******************************************************************************************************************************************
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+For the below steps, run commands using the black terminal icon in the task bar (Anaconda Prompt)
+If an error message appears, do not close out of the terminal. Please leave it so that we can debug the cause of the problem. 
+Use different Anaconda Prompts for Hal, Dave, Steve, and Kilroy 
+-------------------------------------------------------------------------------------------------------------------------------------------
+to start Hal:
+1) conda activate storm_control_env
+2) cd C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\Hal2\storm_control\hal4000
+3) python hal4000.py xml/yale_config_piezo_hw.xml
+-------------------------------------------------------------------------------------------------------------------------------------------
+to start Dave:
+1) conda activate storm_control_env
+2) cd C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\Hal2\storm_control\dave
+3) python dave.py
+-------------------------------------------------------------------------------------------------------------------------------------------
+to start Steve:
+1) conda activate storm_control_env
+2) cd C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\Hal2\storm_control\steve
+3) python steve.py
+-------------------------------------------------------------------------------------------------------------------------------------------
+to start Kilroy:
+1) conda activate storm_control_env
+2) cd C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\fluidics-control\fluidics
+3) python kilroy.py scope_settings/kilroy_config_yale.xml
+-------------------------------------------------------------------------------------------------------------------------------------------
