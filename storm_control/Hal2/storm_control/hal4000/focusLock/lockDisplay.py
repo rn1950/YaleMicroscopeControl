@@ -385,14 +385,16 @@ class QQPDCamDisplay(QCamDisplay):
             self.draw_e1 = False
         else:
             self.draw_e1 = True
-            self.x_off1 = ((qpd_data["y_off1"]+w/2)/float(w))*float(self.width())
+            self.x_off1 = ((qpd_data["x_off1"])/float(w))*float(self.width())
+            #self.x_off1 = qpd_data["x_off1"]
             self.y_off1 = ((qpd_data["x_off1"]+w/2)/float(w))*float(self.height())
             
         if (qpd_data["x_off2"] == 0.0):
             self.draw_e2 = False
         else:
             self.draw_e2 = True
-            self.x_off2 = ((qpd_data["y_off2"]+w/2)/float(w))*float(self.width())
+            self.x_off2 = ((qpd_data["x_off2"])/float(w))*float(self.width())
+            #self.x_off2 = qpd_data["x_off2"]
             self.y_off2 = ((qpd_data["x_off2"]+w/2)/float(w))*float(self.height())
 
         # Red dot in camera display
@@ -484,11 +486,19 @@ class QQPDCamDisplay(QCamDisplay):
                 if self.fit_mode:
                     painter.setPen(QtGui.QColor(0,255,0))
                     if self.draw_e1:
-                        painter.drawEllipse(QtCore.QPointF(self.x_off1, self.y_off1), 
-                                            self.e_size, self.e_size)
+                        # painter.drawEllipse(QtCore.QPointF(self.x_off1, self.y_off1), 
+                        #                     self.e_size, self.e_size)
+                        xval_scaled = str(self.x_off1) 
+                        painter.drawLine(int(self.x_off1), 20, int(self.x_off1), 98)
+                        #print(' in the lock display off1 is: ' + str(self.x_off1))
+                        #print(self.height())
+                        #print(self.width())
                     if self.draw_e2:
-                        painter.drawEllipse(QtCore.QPointF(self.x_off2, self.y_off2), 
-                                            self.e_size, self.e_size)
+                        # painter.drawEllipse(QtCore.QPointF(self.x_off2, self.y_off2), 
+                        #                     self.e_size, self.e_size)
+                        painter.drawLine(int(self.x_off2), 20, int(self.x_off2), 98)
+                        #print(' in the lock display off2 is: ' + str(self.x_off2))
+
 
                 # Square blue boxes for moment mode.
                 else:

@@ -525,6 +525,8 @@ class CameraQPD(object):
         good_total = 0.0
         for i in range(reps):
             [power, n_good, offset] = self.singleQpdScan()
+            #print(offset)
+            #print('checking offset')
             power_total += power
             good_total += n_good
             offset_total += offset
@@ -578,6 +580,9 @@ class CameraQPD(object):
         #
         if (self.fit_mode == 1):
             [total_good, dist1, dist2] = self.doFit(data)
+            #print('here we should be returning' + str(dist1))
+            #print(total_good)
+            #print('here we should be returning' + str(dist2))
 
         # Determine offset by moments calculation.
         else:
@@ -588,19 +593,22 @@ class CameraQPD(object):
 
         # No good fits.
         if (total_good == 0):
+            #print('ids here 3')
             return [power, 0.0, 0.0]
 
         # One good fit.
         elif (total_good == 1):
             if self.allow_single_fits:
-                return [power, 1.0, ((dist1 + dist2) - 0.5*self.zero_dist)]
+                #print('ids here 1')
+                return [power, 1.0, ((dist1) - 0.5*self.zero_dist)]
             else:
+                #print('ids here 2')
                 return [power, 0.0, 0.0]
 
         # Two good fits. This gets twice the weight of one good fit
         # if we are averaging.
         else:
-            return [power, 2.0, 2.0*((dist1 + dist2) - self.zero_dist)]
+            return [power, 2.0, 2.0*((dist1) - self.zero_dist)]
 
 
 class CameraQPDCorrFit(CameraQPD):
@@ -730,39 +738,103 @@ class CameraQPDScipyFit(CameraQPD):
 
         # numpy finder/fitter.
         #
-        # Fit first gaussian to data in the left half of the picture.
+
         total_good =0
-        [max_x, max_y, params, status] = self.fitGaussian(data[:,250:620])
-        # save_img = data[:,400:620]
-        # print(save_img)
-        
-        # plt.savefig("C:/Users/rsn27/storm_control/testplot1l.png")
-        # plt.imshow(save_img)
-        # print('made it here')
-        # mpimg.imsave("C:/Users/rsn27/storm_control/outl.png", save_img)
-        self.half_x = 500
-        self.half_y = 500
-        if status:
-            total_good += 1
-            self.x_off1 = float(max_x) + params[2] - self.half_y
-            self.y_off1 = float(max_y) + params[3] - 390
-            dist1 = abs(self.y_off1)
+        sigma = 30
+        [max_img1, max_img2, params1, params2, status1, status2] = self.fitOneDGaussianForStripes(data)
 
-        # Fit second gaussian to data in the right half of the picture.
-        [max_x, max_y, params, status] = self.fitGaussian(data[:,600:950])
-        # save_img = data[:,620:900]
-        # mpimg.imsave("C:/Users/rsn27/storm_control/outr.png", save_img)
-        
-        # plt.savefig('C:/Users/rsn27/storm_control//testplot1r.png')
-        # plt.imshow(save_img)
-        if status:
-            total_good += 1
-            self.x_off2 = float(max_x) + params[2] - self.half_y
-            self.y_off2 = float(max_y) + params[3] - 40
-            dist2 = abs(self.y_off2)
+        dist = False
 
-        return [total_good, dist1, dist2]
+        if status1 and status2:
+
+            fit_val_1 = params1[2]
+            fit_val_2 = params2[2]
+            
+            #print('fit 1 is: ' + str(fit_val_1))
+            #print('fit 2 is: ' + str(fit_val_2))
+
+            un_cropped_coord_1 = fit_val_1 + 100 + (max_img1 - (1.5 * sigma))
+            un_cropped_coord_2 = fit_val_2 + 640 + (max_img2 - (1.5 * sigma))
+            self.x_off1 = un_cropped_coord_1
+            self.x_off2 = un_cropped_coord_2
+            self.y_off1 = un_cropped_coord_1
+            self.y_off2 = un_cropped_coord_2
+            dist = un_cropped_coord_2 - un_cropped_coord_1
+
+        #print(' status 1 is ' + str(status1) + ' and status 2 is ' + str(status2))
+        if status1 and status2:
+            total_good += 2
+
+        #print(total_good)
+        #print('should be 1')
+        return [total_good, dist, dist]
+
+    def fitOneDGaussianForStripes(self, data):
+        if (np.max(data) < 25):
+            return [False, False, False, False, False, False]
         
+        x_width = data.shape[0]
+        y_width = data.shape[1]
+        max_i = data.argmax()
+        max_x = int(max_i/y_width)
+        max_y = int(max_i%y_width)
+        image_middle = 640
+
+        if (max_x > (self.fit_size-1)) and (max_x < (x_width - self.fit_size)) and (max_y > (self.fit_size-1)) and (max_y < (y_width - self.fit_size)):
+            if self.fit_mutex:
+                self.fit_mutex.lock()
+            #[params, status] = npLPF.fitSymmetricGaussian(data[max_x-self.fit_size:max_x+self.fit_size,max_y-self.fit_size:max_y+self.fit_size], 8.0)
+            #[params, status] = npLPF.fitFixedEllipticalGaussian(data[max_x-self.fit_size:max_x+self.fit_size,max_y-self.fit_size:max_y+self.fit_size], 8.0)
+            
+            # START CODE HERE FOR STRIPES FOCUS LOCK-------------------------------------------------------------------------------------------------------
+
+            subimg1 = data[:, 100:image_middle]
+            subimg2 = data[:, image_middle:]
+            vertical_sum_1 = np.sum(subimg1, axis=0)
+            vertical_sum_2 = np.sum(subimg2, axis=0)
+            max_img1 = np.argmax(vertical_sum_1)
+            max_img2 = np.argmax(vertical_sum_2)
+            sigma = 30
+            if max_img1 <= int(1.5 * sigma) or max_img1 >= (len(vertical_sum_1) - int(1.5 * sigma)):
+                #print('stripe 1 is out of bounds!')
+                return [False, False, False, False, False, False]
+            elif max_img2 <= int(1.5 * sigma) or max_img2 >= (len(vertical_sum_2) - int(1.5 * sigma)):
+                #print('stripe 2 is out of bounds!')
+                return [False, False, False, False, False, False]
+            
+            img1_cropped = vertical_sum_1[max_img1 - int(1.5 * sigma):max_img1 + int(1.5 * sigma)]
+            img2_cropped = vertical_sum_2[max_img2 - int(1.5 * sigma):max_img2 + int(1.5 * sigma)]
+            #print('sizes')
+            #print(img1_cropped.size)
+            #print(img2_cropped.size)
+            [params1, status1] = npLPF.fitOneDGaussian(img1_cropped, sigma)
+            [params2, status2] = npLPF.fitOneDGaussian(img2_cropped, sigma)
+
+
+
+            # END CODE HERE FOR STRIPES FOCUS LOCK-------------------------------------------------------------------------------------------------------
+
+            #[params, status] = npLPF.fitoneDGaussian(data[max_x-self.fit_size:max_x+self.fit_size,max_y-self.fit_size:max_y+self.fit_size], self.sigma)
+
+
+            # print('reached here')
+            if self.fit_mutex:
+                self.fit_mutex.unlock()
+            # params[2] -= self.fit_size
+            # params[3] -= self.fit_size
+
+            return [max_img1, max_img2, params1, params2, status1, status2]
+        
+        else:
+            return [False, False, False, False, False, False]
+
+
+
+
+
+
+
+
     def fitGaussian(self, data):
         if (np.max(data) < 25):
             return [False, False, False, False]
@@ -791,11 +863,57 @@ class CameraQPDScipyFit(CameraQPD):
 
 
 
+# class CameraQPDScipyFit(CameraQPD):
+#     """
+#     This version uses scipy to do the fitting.
+#     """
+#     def __init__(self, fit_mutex = False, **kwds):
+#         super().__init__(**kwds)
 
+#         self.fit_mutex = fit_mutex
 
+#     def doFit(self, data):
+#         dist1 = 0
+#         dist2 = 0
+#         self.x_off1 = 0.0
+#         self.y_off1 = 0.0
+#         self.x_off2 = 0.0
+#         self.y_off2 = 0.0
 
+#         # numpy finder/fitter.
+#         #
+#         # Fit first gaussian to data in the left half of the picture.
+#         total_good =0
+#         [max_x, max_y, params, status] = self.fitGaussian(data[:,250:620])
+#         # save_img = data[:,400:620]
+#         # print(save_img)
+        
+#         # plt.savefig("C:/Users/rsn27/storm_control/testplot1l.png")
+#         # plt.imshow(save_img)
+#         # print('made it here')
+#         # mpimg.imsave("C:/Users/rsn27/storm_control/outl.png", save_img)
+#         self.half_x = 500
+#         self.half_y = 500
+#         if status:
+#             total_good += 1
+#             self.x_off1 = float(max_x) + params[2] - self.half_y
+#             self.y_off1 = float(max_y) + params[3] - 390
+#             dist1 = abs(self.y_off1)
 
+#         # Fit second gaussian to data in the right half of the picture.
+#         [max_x, max_y, params, status] = self.fitOneDGaussianForStripes(data[:,600:950])
+#         # save_img = data[:,620:900]
+#         # mpimg.imsave("C:/Users/rsn27/storm_control/outr.png", save_img)
+        
+#         # plt.savefig('C:/Users/rsn27/storm_control//testplot1r.png')
+#         # plt.imshow(save_img)
+#         if status:
+#             total_good += 1
+#             self.x_off2 = float(max_x) + params[2] - self.half_y
+#             self.y_off2 = float(max_y) + params[3] - 40
+#             dist2 = abs(self.y_off2)
 
+#         return [total_good, dist1, dist2]
 
 
 

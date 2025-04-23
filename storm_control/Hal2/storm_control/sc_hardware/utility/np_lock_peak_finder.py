@@ -14,6 +14,36 @@ import storm_control.sc_library.hdebug as hdebug
 
 last_warning_time = None
 
+def fit1DGaussianLeastSquares(data, params, fn):
+    """
+    Does least squares fitting of a function.
+    """
+    start_time = time.time()
+    result = params
+#    errorfn = lambda p: numpy.ravel(fn(*p)(numpy.indices(data.shape)) - data)
+    errorfn = lambda p: fn(*p)(numpy.indices(data.shape)[0]) - data
+    good = True
+    [result, cov_x, infodict, mesg, success] = scipy.optimize.leastsq(errorfn, params, full_output = 1, maxfev = 500)
+    if (success < 1) or (success > 4):
+        hdebug.logText("Fitting problem: " + mesg)
+        #print "Fitting problem:", mesg
+        good = False
+    end_time = time.time()
+
+    if (infodict["nfev"] > 70) or ((end_time - start_time) > 0.1):
+        
+        global last_warning_time
+        if last_warning_time is None or ((time.time() - last_warning_time) > 2.0):
+            if False:
+                print("> QPD-480 Slow fitting detected")
+                print(">", infodict["nfev"], time.time() - start_time)
+                print(">", params)
+                print(">", result)
+                print()
+            last_warning_time = time.time()
+        
+    return [result, good]
+
 def fitAFunctionLS(data, params, fn):
     """
     Does least squares fitting of a function.
@@ -66,6 +96,23 @@ def fitSymmetricGaussian(data, sigma):
               0.5 * data.shape[1],
               2.0 * sigma]
     return fitAFunctionLS(data, params, symmetricGaussian)
+
+def fitOneDGaussian(data, sigma):
+    """
+    Fits a 1D gaussian to the data (for stripes focus lock)
+    """
+    params = [numpy.min(data),
+              numpy.max(data),
+              0.5 * len(data),
+              2.0 * sigma]
+    return fit1DGaussianLeastSquares(data, params, oneDGaussian)
+
+
+def oneDGaussian(background, height, center_x, width):
+    """
+    Returns a function that will return the amplitude of a 1D gaussian (for stripes focus lock)
+    """
+    return lambda x: background + height*numpy.exp(-(((center_x-x)/width)**2) * 2)
 
 def fitFixedEllipticalGaussian(data, sigma):
     """
