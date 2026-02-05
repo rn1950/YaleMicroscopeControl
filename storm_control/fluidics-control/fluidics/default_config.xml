@@ -404,6 +404,9 @@
      <pump_cmd name = "0.3 mL/min">
        <pump_config speed = "20.00" direction = "Forward"></pump_config>
      </pump_cmd>
+     <pump_cmd name = "Speed 0.15">
+       <pump_config speed = "0.15" direction = "Forward"></pump_config>
+     </pump_cmd>
       <pump_cmd name = "0.6 mL/min">
        <pump_config speed = "40.00" direction = "Forward"></pump_config>
      </pump_cmd>

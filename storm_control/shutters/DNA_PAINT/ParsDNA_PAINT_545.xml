@@ -90,7 +90,7 @@
     <default_power type="custom">1.000,1.000,1.000,1.000,1.000,1.000</default_power>
     <on_off_state type="custom">False,False,False,False,False,False</on_off_state>
     <power_buttons type="custom">[[['Max', 1.0], ['Low', 0.1]], [['Max', 1.0], ['Low', 0.1]], [['Max', 1.0], ['Low', 0.1]], [['Max', 1.0], ['Low', 0.1]], [['Max', 1.0], ['Low', 0.1]], [['Max', 1.0], ['Low', 0.1]]]</power_buttons>
-    <shutters type="string">E:\25_01_22_dna_paint_testing\settings\shutters_DNA_PAINT_545.xml</shutters>
+    <shutters type="string">C:\storm_control_git_tracked\YaleMicroscopeControl\storm_control\shutters\DNA_PAINT\shutters_DNA_PAINT_545.xml</shutters>
   </illumination>
   <mosaic validate="False">
     <flip_horizontal type="boolean">False</flip_horizontal>

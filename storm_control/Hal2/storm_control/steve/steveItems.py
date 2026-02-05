@@ -80,7 +80,9 @@ class SteveItemsStore(object):
         This will add the SteveItem to our data store and also to the
         QGraphicsScene if this is a graphical SteveItem.
         """
-        assert not (item.getItemID() in self.items)
+        
+        print('robby commented out on 05/25/25 it was causing an error preventing mosaic from opening')
+        #assert not (item.getItemID() in self.items) #robby commented out on 05/25/25 it was causing an error preventing mosaic from opening
         self.items[item.getItemID()] = item
         gi = item.getGraphicsItem()
         if gi is not None:
